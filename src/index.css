@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Zine palette: photocopy paper, black ink, highlighter + hot pink spot colours */
+:root, [data-theme='light'] {
+  --paper: 228 226 218;  --card: 248 246 239;  --ink: 20 18 15;   --muted: 104 98 88;
+  --line: 205 201 190;   --hl: 255 225 53;     --pink: 255 61 129;
+  --win: 22 163 90;      --loss: 230 50 45;    --meh: 140 134 124;
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --paper: 21 19 16;     --card: 33 30 25;     --ink: 242 238 226; --muted: 170 163 150;
+  --line: 58 53 45;      --hl: 255 225 53;     --pink: 255 106 160;
+  --win: 72 205 130;     --loss: 255 110 100;  --meh: 150 144 134;
+  color-scheme: dark;
+}
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    transition: background-color .25s ease, color .25s ease;
+  }
+  h1, h2, h3, h4 { @apply font-display uppercase leading-[1.05] tracking-tight; }
+  :focus-visible { outline: 3px dashed rgb(var(--pink)); outline-offset: 3px; }
+  ::selection { background: rgb(var(--hl)); color: #14120f; }
+}
+
+@layer components {
+  /* Highlighter swipe behind text */
+  .hl {
+    background: linear-gradient(transparent 55%, rgb(var(--hl)) 55% 92%, transparent 92%);
+    color: inherit;
+    padding: 0 .15em;
+  }
+  [data-theme='dark'] .hl { color: rgb(var(--ink)); background: linear-gradient(transparent 55%, rgb(var(--hl) / .45) 55% 92%, transparent 92%); }
+  /* Rubber-stamp label */
+  .stamp {
+    @apply inline-block border-2 border-current px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider;
+    transform: rotate(-3deg);
+  }
+  /* Masking-tape strip */
+  .tape {
+    position: absolute; top: -11px; left: 50%; width: 72px; height: 22px;
+    background: rgb(var(--hl) / .8);
+    border-left: 2px dotted rgb(0 0 0 / .18); border-right: 2px dotted rgb(0 0 0 / .18);
+    transform: translateX(-50%) rotate(var(--tape-rot, -3deg));
+    pointer-events: none;
+  }
+  .glass {
+    background: rgb(var(--card) / .78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .skeleton {
+    @apply rounded-slip bg-line;
+    animation: pulse-soft 1.2s steps(4, end) infinite;
+  }
+}
+@keyframes pulse-soft { 50% { opacity: .45; } }
+@keyframes shake { 0%,100% { transform: translateX(0) } 20%,60% { transform: translateX(-8px) } 40%,80% { transform: translateX(8px) } }
+.animate-shake { animation: shake .4s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}
