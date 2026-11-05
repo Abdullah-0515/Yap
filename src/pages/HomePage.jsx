@@ -1,17 +1,46 @@
-import { Button, Card } from '../components/ui'
-import { useAuthStore } from '../store/authStore'
+import { useEffect } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import AppShell from '../components/layout/AppShell'
+import Composer from '../components/feed/Composer'
+import FeedControls from '../components/feed/FeedControls'
+import PostCard from '../components/feed/PostCard'
+import { PostSkeleton } from '../components/ui'
+import { usePostsStore } from '../store/postsStore'
 
-// Placeholder: the real feed arrives in the feed milestone.
 export default function HomePage() {
-  const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
+  const { posts, loading, tab, fetch } = usePostsStore()
+
+  useEffect(() => { fetch() }, [fetch])
+
   return (
-    <main className="mx-auto max-w-xl p-5 pt-10">
-      <Card tilt={0.6} tape className="p-6 pt-7">
-        <h1 className="text-3xl">Hey {user?.name}</h1>
-        <p className="mt-2 text-muted">You are in. The feed is coming soon.</p>
-        <Button variant="soft" className="mt-4" onClick={logout}>Log out</Button>
-      </Card>
-    </main>
+    <AppShell>
+      <h1 className="mb-1 text-4xl sm:text-5xl">{tab === 'take' ? 'Hot Takes' : 'Confessions'}</h1>
+      <p className="mb-5 -rotate-1 font-marker text-lg text-muted">
+        {tab === 'take' ? 'say it with your chest' : 'nobody knows it was you'}
+      </p>
+      <FeedControls />
+
+      <div className="mt-6 space-y-7">
+        {loading ? (
+          <>
+            <PostSkeleton />
+            <PostSkeleton />
+          </>
+        ) : posts.length === 0 ? (
+          <p className="rounded-slip border-2 border-dashed border-ink/50 p-8 text-center font-marker text-xl text-muted">
+            nothing here yet. be the first to yap.
+          </p>
+        ) : (
+          <AnimatePresence initial={false}>
+            {posts.map((p) => (
+              <motion.div key={p.id} layout initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <PostCard post={p} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        )}
+      </div>
+      <Composer />
+    </AppShell>
   )
 }
