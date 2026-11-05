@@ -30,7 +30,6 @@ export default function AppShell({ children }) {
     <>
       <NavButton active={tab === 'take'} onClick={() => setTab('take')} icon="🔥" label="Hot Takes" />
       <NavButton active={tab === 'confession'} onClick={() => setTab('confession')} icon="🫣" label="Confessions" />
-      <NavButton active={false} onClick={toggleTheme} icon={theme === 'dark' ? '☀️' : '🌙'} label={theme === 'dark' ? 'Light' : 'Dark'} />
     </>
   )
 
@@ -54,7 +53,14 @@ export default function AppShell({ children }) {
       </nav>
 
       <div className="md:pl-56 lg:pr-72">
-        <main className="mx-auto max-w-2xl px-4 pb-44 pt-6 md:pb-32">{children}</main>
+        <main className="mx-auto max-w-2xl px-4 pb-44 pt-6 md:pb-32">
+          <div className="mb-4 flex justify-end">
+            <Button variant="soft" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
+              Flip paper
+            </Button>
+          </div>
+          {children}
+        </main>
       </div>
 
       {/* Right trending column (large screens) */}
